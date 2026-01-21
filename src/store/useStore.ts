@@ -15,65 +15,60 @@ interface AppState {
     updateContractStatus: (id: string, status: ContractStatus) => void;
 }
 
-// Dummy Data
-const INITIAL_BLUEPRINTS: Blueprint[] = [
-    {
-        id: 'bp-1',
-        name: 'NDA Standard Agreement',
-        description: 'Standard Non-Disclosure Agreement for new employees or contractors.',
-        fields: [
-            { id: 'f-1', type: 'text', label: 'Disclosing Party', required: true, placeholder: 'Company Name' },
-            { id: 'f-2', type: 'text', label: 'Receiving Party', required: true, placeholder: 'Recipient Name' },
-            { id: 'f-3', type: 'date', label: 'Effective Date', required: true },
-            { id: 'f-4', type: 'checkbox', label: 'Include IP Clauses', required: false },
-            { id: 'f-5', type: 'signature', label: 'Recipient Signature', required: true },
-        ],
-        createdAt: new Date(Date.now() - 10000000).toISOString(),
-        updatedAt: new Date(Date.now() - 5000000).toISOString(),
-    },
-    {
-        id: 'bp-2',
-        name: 'Freelance Service Contract',
-        description: 'General purpose contract for freelance web development services.',
-        fields: [
-            { id: 'f-10', type: 'text', label: 'Client Name', required: true },
-            { id: 'f-11', type: 'text', label: 'Project Scope', required: true, placeholder: 'e.g. Website Redesign' },
-            { id: 'f-12', type: 'text', label: 'Rate (USD / Hour)', required: true },
-            { id: 'f-13', type: 'date', label: 'Start Date', required: true },
-            { id: 'f-14', type: 'signature', label: 'Contractor Signature', required: true },
-        ],
-        createdAt: new Date(Date.now() - 8000000).toISOString(),
-        updatedAt: new Date(Date.now() - 4000000).toISOString(),
-    }
-];
+// 15 Dummy Blueprints
+const generateBlueprints = (): Blueprint[] => {
+    const titles = [
+        "NDA Standard Agreement", "Freelance Service Contract", "Employment Offer Letter", "Software License Agreement", "Consulting Agreement",
+        "Lease Agreement (Commercial)", "Partnership Deed", "Vendor Supplier Contract", "Website Maintenance", "IP Assignment Deed",
+        "SaaS Subscription Agreement", "Marketing Retainer", "Event Sponsorship", "Data Processing Addendum", "Termination Notice"
+    ];
 
-const generateDummyContracts = (count: number): Contract[] => {
+    return titles.map((title, i) => ({
+        id: `bp-${i + 1}`,
+        name: title,
+        description: `Standard template for ${title}.`,
+        fields: [
+            { id: `f-${i}-1`, type: 'text', label: 'Primary Party', required: true },
+            { id: `f-${i}-2`, type: 'text', label: 'Counterparty', required: true },
+            { id: `f-${i}-3`, type: 'date', label: 'Effective Date', required: true },
+            { id: `f-${i}-4`, type: 'signature', label: 'Signature', required: true }
+        ],
+        createdAt: new Date(Date.now() - (i * 86400000)).toISOString(),
+        updatedAt: new Date(Date.now() - (i * 43200000)).toISOString(),
+    }));
+};
+
+const INITIAL_BLUEPRINTS = generateBlueprints();
+
+// 15 Dummy Contracts (linked to blueprints)
+const generateContracts = (blueprints: Blueprint[]): Contract[] => {
+    const companies = ['Acme Corp', 'Stark Ind', 'Wayne Ent', 'Cyberdyne', 'Umbrella', 'Globex', 'Soylent', 'Massive Dynamic', 'Hooli', 'Initech', 'Tyrell Corp', 'Oscorp', 'LexCorp', 'Aperture Science', 'Black Mesa'];
     const statuses: ContractStatus[] = ['created', 'approved', 'sent', 'signed', 'locked'];
-    const companies = ['Acme Corp', 'Stark Ind', 'Wayne Ent', 'Cyberdyne', 'Umbrella', 'Globex', 'Soylent', 'Massive Dynamic', 'Hooli', 'Initech'];
 
-    return Array.from({ length: count }).map((_, i) => {
-        const status = statuses[i % statuses.length];
-        const isNDA = i % 2 === 0;
-        const bp = isNDA ? INITIAL_BLUEPRINTS[0] : INITIAL_BLUEPRINTS[1];
-        const company = companies[i % companies.length];
-
+    return Array.from({ length: 15 }).map((_, i) => {
+        const bp = blueprints[i];
+        const status = statuses[i % 5];
         return {
             id: `c-${i + 1}`,
             blueprintId: bp.id,
             blueprintName: bp.name,
-            name: `${isNDA ? 'NDA' : 'Service Contract'} - ${company} ${i + 1}`,
+            name: `${bp.name} - ${companies[i]}`,
             status,
-            fieldValues: {},
+            fieldValues: {
+                [`f-${i}-1`]: 'My Company Inc',
+                [`f-${i}-2`]: companies[i],
+                [`f-${i}-3`]: new Date().toISOString().split('T')[0],
+            },
             history: [
-                { status: 'created', timestamp: new Date(Date.now() - (i * 10000000)).toISOString() }
+                { status: 'created', timestamp: new Date(Date.now() - 10000000).toISOString() }
             ],
-            createdAt: new Date(Date.now() - (i * 10000000)).toISOString(),
-            updatedAt: new Date(Date.now() - (i * 5000000)).toISOString(),
+            createdAt: new Date(Date.now() - (i * 3600000)).toISOString(),
+            updatedAt: new Date(Date.now()).toISOString(),
         };
     });
 };
 
-const INITIAL_CONTRACTS = generateDummyContracts(35);
+const INITIAL_CONTRACTS = generateContracts(INITIAL_BLUEPRINTS);
 
 export const useStore = create<AppState>()(
     persist(
