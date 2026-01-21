@@ -11,7 +11,7 @@ export function Header() {
             case location.pathname.startsWith('/blueprints'): return 'Blueprint Studio';
             case location.pathname.startsWith('/create-contract'): return 'New Agreement';
             case location.pathname.startsWith('/contracts'): return 'Contract Details';
-            default: return 'ContractFlow';
+            default: return 'Contract Management';
         }
     };
 

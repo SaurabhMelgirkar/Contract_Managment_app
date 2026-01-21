@@ -12,7 +12,7 @@ export function Sidebar() {
                 </div>
                 <div>
                     <span className="text-2xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-brand-100 font-heading block">
-                        Contract<span className="font-light text-brand-200">Flow</span>
+                        Contract<span className="font-light text-brand-200">Management</span>
                     </span>
                 </div>
             </div>
